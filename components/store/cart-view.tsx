@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 
 function SmallStepper({ item }: { item: CartItem }) {
   const { setQuantity } = useCart()
-  const button = "flex h-8 w-8 items-center justify-center text-st-accent transition disabled:opacity-30 st-focus"
+  const button = "flex h-8 w-8 items-center justify-center text-st-primary transition disabled:opacity-30 st-focus"
   return (
     <div className="inline-flex items-center rounded-lg border border-st-border bg-st-card" role="group" aria-label="Cantidad">
       <button type="button" className={button} onClick={() => setQuantity(item.key, item.quantity - 1)} aria-label="Quitar uno">

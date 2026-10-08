@@ -157,13 +157,13 @@ export function ProductDetail({ product, category, canOrder }: { product: Detail
         ) : (
           <div className="mx-auto flex max-w-xl items-center gap-3 md:mx-0">
             <div className="flex shrink-0 items-center gap-2" role="group" aria-label="Cantidad">
-              <button type="button" onClick={() => setQuantity((current) => Math.max(1, current - 1))} disabled={quantity <= 1} aria-label="Quitar uno" className="flex h-11 w-11 items-center justify-center rounded-lg bg-st-accent/25 text-st-accent transition disabled:opacity-40 st-focus">
+              <button type="button" onClick={() => setQuantity((current) => Math.max(1, current - 1))} disabled={quantity <= 1} aria-label="Quitar uno" className="flex h-11 w-11 items-center justify-center rounded-lg bg-st-primary/15 text-st-primary transition disabled:opacity-40 st-focus">
                 <Minus className="h-6 w-6" strokeWidth={3} aria-hidden />
               </button>
               <span className="w-8 text-center text-xl font-black tabular-nums" aria-live="polite">
                 {quantity}
               </span>
-              <button type="button" onClick={() => setQuantity((current) => Math.min(99, current + 1))} disabled={quantity >= 99} aria-label="Agregar uno" className="flex h-11 w-11 items-center justify-center rounded-lg bg-st-accent text-st-accent-fg transition disabled:opacity-40 st-focus">
+              <button type="button" onClick={() => setQuantity((current) => Math.min(99, current + 1))} disabled={quantity >= 99} aria-label="Agregar uno" className="flex h-11 w-11 items-center justify-center rounded-lg bg-st-primary text-st-primary-fg transition disabled:opacity-40 st-focus">
                 <Plus className="h-6 w-6" strokeWidth={3} aria-hidden />
               </button>
             </div>
