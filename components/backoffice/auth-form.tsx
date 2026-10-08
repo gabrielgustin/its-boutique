@@ -5,6 +5,7 @@ import { authClient } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { toLoginEmail } from "@/lib/backoffice-username"
 
 export function BackofficeSignInForm() {
   const [email, setEmail] = useState("")
@@ -17,10 +18,10 @@ export function BackofficeSignInForm() {
     setError(null)
     setIsLoading(true)
 
-    const { error: signInError } = await authClient.signIn.email({ email, password })
+    const { error: signInError } = await authClient.signIn.email({ email: toLoginEmail(email), password })
 
     if (signInError) {
-      setError("Email o contraseña incorrectos")
+      setError("Usuario o contraseña incorrectos")
       setIsLoading(false)
       return
     }
@@ -36,11 +37,11 @@ export function BackofficeSignInForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-sm">
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">Usuario o email</Label>
         <Input
           id="email"
-          type="email"
-          autoComplete="email"
+          type="text"
+          autoComplete="username"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}

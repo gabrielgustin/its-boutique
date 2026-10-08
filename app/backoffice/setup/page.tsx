@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { MIN_PASSWORD_LENGTH } from "@/lib/backoffice-username"
 
 export default function BackofficeSetupPage() {
   const router = useRouter()
@@ -79,10 +80,11 @@ export default function BackofficeSetupPage() {
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Usuario o email</Label>
             <Input
               id="email"
-              type="email"
+              type="text"
+              autoComplete="username"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -94,7 +96,7 @@ export default function BackofficeSetupPage() {
               id="password"
               type="password"
               required
-              minLength={8}
+              minLength={MIN_PASSWORD_LENGTH}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
