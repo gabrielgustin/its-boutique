@@ -112,9 +112,9 @@ export async function migrate(driver: Queryable, exec: (text: string) => Promise
   return done
 }
 
-/** Solo en local: carga un catálogo de ejemplo la primera vez, para no arrancar con la tienda vacía. */
+/** Solo en local: carga un cupón y datos de contacto de ejemplo la primera vez. */
 async function seedDemo(driver: Queryable, exec: (text: string) => Promise<void>) {
-  const [{ count }] = await driver.query<{ count: string }>(`SELECT COUNT(*) AS count FROM categorias`)
+  const [{ count }] = await driver.query<{ count: string }>(`SELECT COUNT(*) AS count FROM coupons`)
   if (Number(count) > 0) return
   const file = path.join(process.cwd(), "db", "seed", "demo.sql")
   const text = await fs.readFile(file, "utf8").catch(() => null)
