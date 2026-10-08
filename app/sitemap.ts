@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next"
 import { getCategories, getProducts } from "@/lib/db"
 
-export const dynamic = "force-dynamic"
+// Se renueva cada 5 minutos con los productos publicados.
+export const revalidate = 300
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "")

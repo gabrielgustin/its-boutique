@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next"
 import { getStoreInfo, getTheme } from "@/lib/db"
 import { DEFAULT_SITE_DESCRIPTION, resolveColor } from "@/lib/theme"
 
-// Se arma con datos de la base: no se genera durante el build.
-export const dynamic = "force-dynamic"
+// Se arma con datos de la base y se renueva cada 5 minutos.
+export const revalidate = 300
 
 // Permite instalar la tienda en la pantalla de inicio del celular (PWA).
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
