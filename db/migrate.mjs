@@ -7,6 +7,10 @@ import { fileURLToPath } from "node:url"
 import pg from "pg"
 
 const url = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.NEON_DATABASE_URL || process.env.NEON_POSTGRES_URL
+if (!url && process.env.VERCEL) {
+  console.error("[migrate] Falta DATABASE_URL en Vercel: conectá Neon (Storage) al proyecto antes de desplegar.")
+  process.exit(1)
+}
 if (!url) {
   console.log("[migrate] Sin DATABASE_URL: no hay nada que migrar (modo local con PGlite).")
   process.exit(0)

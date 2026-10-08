@@ -122,6 +122,10 @@ async function seedDemo(driver: Queryable, exec: (text: string) => Promise<void>
 }
 
 function getDriver(): Promise<Driver> {
+  // En producción nunca se usa la base local: falla con un mensaje claro en vez de perder datos.
+  if (process.env.NODE_ENV === "production" && isLocalDatabase) {
+    return Promise.reject(new Error("Falta DATABASE_URL: conectá la base de datos (Neon) en las variables de entorno del proyecto."))
+  }
   globalStore.__itsDriver ??= (isLocalDatabase ? createPgliteDriver() : createPgDriver()).catch((error) => {
     globalStore.__itsDriver = undefined
     throw error
