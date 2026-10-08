@@ -1,0 +1,300 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Carpetas que no tienen código de la app: Tailwind no debe buscar clases ahí. */
+@source not "../_archivo";
+@source not "../data";
+@source not "../db";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Componentes del backoffice (shadcn/ui) */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  /* Tienda: cada color sale de una variable que "Personaliza tu App" puede cambiar.
+     Uso: bg-st-primary, text-st-heading, border-st-border, rounded-st, font-heading… */
+  --color-st-primary: var(--st-primary);
+  --color-st-primary-fg: var(--st-primary-fg);
+  --color-st-secondary: var(--st-secondary);
+  --color-st-secondary-fg: var(--st-secondary-fg);
+  --color-st-accent: var(--st-accent);
+  --color-st-accent-fg: var(--st-accent-fg);
+  --color-st-bg: var(--st-bg);
+  --color-st-header: var(--st-header);
+  --color-st-header-fg: var(--st-header-fg);
+  --color-st-card: var(--st-card);
+  --color-st-text: var(--st-text);
+  --color-st-heading: var(--st-heading);
+  --color-st-price: var(--st-price);
+  --color-st-muted: var(--st-muted);
+  --color-st-border: var(--st-border);
+  --color-st-nav: var(--st-nav);
+  --color-st-nav-fg: var(--st-nav-fg);
+  --color-st-button: var(--st-button);
+  --color-st-button-fg: var(--st-button-fg);
+  --radius-st: var(--st-radius);
+  --radius-st-btn: var(--st-radius-btn);
+  --font-heading: var(--st-font-heading), Georgia, "Times New Roman", serif;
+  --font-body: var(--st-font-body), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ───────────── Tienda ─────────────
+   Diseño original. "Personaliza tu App" pisa estas variables (lib/theme.ts → themeCss). */
+.store {
+  --st-primary: #1e4b8e;
+  --st-primary-fg: #ffffff;
+  --st-secondary: #d7ecf8;
+  --st-secondary-fg: #1f1410;
+  --st-accent: #b4235a;
+  --st-accent-fg: #ffffff;
+  --st-bg: #f4f4f5;
+  --st-header: #fafafa;
+  --st-header-fg: #1f1410;
+  --st-card: #ffffff;
+  --st-text: #1f2937;
+  --st-heading: #111827;
+  --st-price: #111827;
+  --st-muted: #6b7280;
+  --st-border: #e5e7eb;
+  --st-nav: var(--st-primary);
+  --st-nav-fg: var(--st-primary-fg);
+  --st-button: var(--st-primary);
+  --st-button-fg: var(--st-primary-fg);
+  --st-radius: 0.75rem;
+  --st-shadow: 0 2px 10px rgb(0 0 0 / 0.09);
+  --st-radius-btn: 0.625rem;
+  --st-font-heading: var(--font-anton);
+  --st-font-body: var(--font-lato);
+  --st-heading-case: none;
+  --st-heading-tracking: 0;
+  --st-logo-h: 3.1rem;
+  --st-image-ratio: 4 / 5;
+
+  min-height: 100dvh;
+  background: var(--st-bg);
+  color: var(--st-text);
+  font-family: var(--st-font-body), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@layer components {
+  /* Títulos de la tienda: tipografía, mayúsculas y separación salen del tema. */
+  .st-heading {
+    font-family: var(--st-font-heading), Georgia, "Times New Roman", serif;
+    color: var(--st-heading);
+    text-transform: var(--st-heading-case);
+    letter-spacing: var(--st-heading-tracking);
+  }
+
+  .st-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-st-btn bg-st-button px-5 py-3 text-sm font-semibold text-st-button-fg transition;
+  }
+  .st-btn:hover {
+    filter: brightness(1.08);
+  }
+  .st-btn:active {
+    transform: scale(0.98);
+  }
+  .st-btn:disabled {
+    @apply cursor-not-allowed opacity-50;
+    filter: none;
+    transform: none;
+  }
+
+  .st-btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-st-btn border border-st-border bg-st-card px-5 py-3 text-sm font-semibold text-st-text transition hover:border-st-primary hover:text-st-primary;
+  }
+
+  .st-input {
+    @apply w-full rounded-st-btn border border-st-border bg-st-card px-3.5 py-3 text-base text-st-text outline-none transition placeholder:text-st-muted/70 focus:border-st-primary focus:ring-2 focus:ring-st-primary/20;
+  }
+
+  .st-card {
+    @apply rounded-st border border-st-border bg-st-card;
+  }
+
+  /* Tarjeta elevada, como las de categorías y productos */
+  .st-raised {
+    @apply rounded-st bg-st-card;
+    box-shadow: var(--st-shadow);
+  }
+
+  /* Barra de título de cada pantalla */
+  .st-title {
+    font-family: var(--st-font-heading), Impact, sans-serif;
+    text-transform: var(--st-heading-case);
+    letter-spacing: var(--st-heading-tracking);
+    line-height: 1.05;
+  }
+
+  /* Etiqueta verde de descuento */
+  .st-off {
+    @apply inline-block rounded-full px-3 py-1 text-xs font-extrabold uppercase tracking-wide;
+    background: #d4f4dd;
+    color: #2d5f3f;
+  }
+
+  .st-focus {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-st-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-st-bg;
+  }
+
+  /* Títulos del backoffice */
+  .title-font {
+    font-family: var(--font-anton), Impact, sans-serif;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Esqueleto de carga */
+@keyframes st-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+.st-skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--st-radius);
+  background: color-mix(in srgb, var(--st-text) 8%, var(--st-card));
+}
+.st-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--st-card) 60%, transparent), transparent);
+  animation: st-shimmer 1.4s infinite;
+}
+
+@keyframes st-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.st-pop {
+  animation: st-pop 0.35s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-skeleton::after,
+  .st-pop {
+    animation: none;
+  }
+}
