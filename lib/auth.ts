@@ -2,6 +2,7 @@ import "server-only"
 import { betterAuth } from "better-auth"
 import { PostgresDialect } from "kysely"
 import { getPool, isLocalDatabase, query } from "@/lib/sql"
+import { MIN_PASSWORD_LENGTH } from "@/lib/backoffice-username"
 
 function resolveBaseURL() {
   if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL
@@ -26,7 +27,7 @@ async function createAuth() {
     // En local hay un secreto fijo de desarrollo; en producción BETTER_AUTH_SECRET es obligatorio.
     secret: process.env.BETTER_AUTH_SECRET ?? (process.env.NODE_ENV === "production" ? undefined : "its-boutique-dev-secret"),
     trustedOrigins: resolveTrustedOrigins(),
-    emailAndPassword: { enabled: true, minPasswordLength: 8 },
+    emailAndPassword: { enabled: true, minPasswordLength: MIN_PASSWORD_LENGTH },
     rateLimit: { enabled: true, window: 60, max: 30 },
     // La sesión del panel dura 12 horas; después hay que volver a entrar.
     session: { expiresIn: 60 * 60 * 12, updateAge: 60 * 60 },

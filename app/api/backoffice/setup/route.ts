@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getAuth } from "@/lib/auth"
 import { sql } from "@/lib/sql"
+import { MIN_PASSWORD_LENGTH, toLoginEmail } from "@/lib/backoffice-username"
 
 async function hasAdminUser() {
   const result = await sql`SELECT id FROM "user" LIMIT 1`
@@ -28,18 +29,18 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { email, password, name } = body
+    const { email: identifier, password, name } = body
 
-    if (!email || !password || password.length < 8) {
+    if (!identifier || !password || password.length < MIN_PASSWORD_LENGTH) {
       return NextResponse.json(
-        { error: "Email y contraseña (mínimo 8 caracteres) son obligatorios" },
+        { error: `Usuario y contraseña (mínimo ${MIN_PASSWORD_LENGTH} caracteres) son obligatorios` },
         { status: 400 },
       )
     }
 
     const auth = await getAuth()
     await auth.api.signUpEmail({
-      body: { email, password, name: name || "Administrador" },
+      body: { email: toLoginEmail(identifier), password, name: name || "Administrador" },
     })
 
     return NextResponse.json({ success: true })
