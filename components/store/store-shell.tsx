@@ -146,6 +146,15 @@ function SideMenu({ open, onClose, store }: { open: boolean; onClose: () => void
           </Link>
 
         </nav>
+
+        <a
+          href="https://www.autogestiva.com.ar"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block rounded-tr-2xl bg-st-accent px-6 py-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] text-center text-base font-bold text-st-accent-fg transition hover:brightness-110 st-focus"
+        >
+          ¡Quiero una tienda así para mi negocio!
+        </a>
       </aside>
     </div>
   )
