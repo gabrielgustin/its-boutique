@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { sql } from "@/lib/sql"
 import { requireBackofficeSession } from "@/lib/backoffice-auth"
+import { cleanDiscount } from "@/lib/pricing"
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -26,7 +27,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
           categoria = ${categoria || ""},
           visible = ${visible !== false},
           subcategoria = ${subcategoria || ""},
-          descuento = ${descuento || 0},
+          descuento = ${cleanDiscount(descuento)},
           updated_at = NOW()
       WHERE id = ${id}
       RETURNING *

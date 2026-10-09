@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { couponDiscount, orderNumber, orderTotals, unitPrice } from "@/lib/pricing"
+import { cleanDiscount, couponDiscount, orderNumber, orderTotals, unitPrice } from "@/lib/pricing"
 
 describe("unitPrice", () => {
   it("aplica el descuento del producto y redondea a pesos", () => {
@@ -43,5 +43,25 @@ describe("orderNumber", () => {
   it("rellena con ceros", () => {
     expect(orderNumber(7)).toBe("#00007")
     expect(orderNumber(123456)).toBe("#123456")
+  })
+})
+
+describe("cleanDiscount", () => {
+  it("acepta enteros de 0 a 100, también como texto", () => {
+    expect(cleanDiscount(20)).toBe(20)
+    expect(cleanDiscount("15")).toBe(15)
+    expect(cleanDiscount(0)).toBe(0)
+    expect(cleanDiscount(100)).toBe(100)
+  })
+  it("redondea y limita lo que se pase de rango", () => {
+    expect(cleanDiscount(12.6)).toBe(13)
+    expect(cleanDiscount(150)).toBe(100)
+    expect(cleanDiscount(-5)).toBe(0)
+  })
+  it("trata lo que no es un número como sin descuento", () => {
+    expect(cleanDiscount("")).toBe(0)
+    expect(cleanDiscount("abc")).toBe(0)
+    expect(cleanDiscount(undefined)).toBe(0)
+    expect(cleanDiscount(null)).toBe(0)
   })
 })

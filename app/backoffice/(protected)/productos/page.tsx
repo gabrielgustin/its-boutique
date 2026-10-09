@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast"
 import { PreviewButton } from "@/components/backoffice/preview-button"
 import { SignOutButton } from "@/components/backoffice/sign-out-button"
 import { uploadBackofficeImage } from "@/lib/backoffice-image-upload"
+import { cleanDiscount, formatPrice, unitPrice } from "@/lib/pricing"
 import { ExtraImages } from "@/components/backoffice/extra-images"
 
 // Valor de la opción «Ninguna» de los selectores (el selector no admite un valor vacío).
@@ -688,7 +689,32 @@ export default function ProductosPage() {
                         className="bg-gray-50 border-0 h-10"
                       />
                     </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="descuento-producto" className="text-sm font-medium text-gray-700">
+                        Descuento (%)
+                      </Label>
+                      <Input
+                        id="descuento-producto"
+                        type="number"
+                        inputMode="numeric"
+                        min="0"
+                        max="100"
+                        step="1"
+                        placeholder="0"
+                        value={nuevoProducto.descuento || ""}
+                        onChange={(e) => setNuevoProducto({ ...nuevoProducto, descuento: cleanDiscount(e.target.value) })}
+                        className="bg-gray-50 border-0 h-10"
+                      />
+                    </div>
                   </div>
+                  {(nuevoProducto.descuento ?? 0) > 0 && Number(nuevoProducto.precio) > 0 && (
+                    <p className="-mt-1 text-xs text-gray-600">
+                      Precio final en la tienda:{" "}
+                      <span className="font-semibold text-[#1e4b8e]">{formatPrice(unitPrice(Number(nuevoProducto.precio), nuevoProducto.descuento))}</span>{" "}
+                      <span className="text-gray-400 line-through">{formatPrice(Number(nuevoProducto.precio))}</span>
+                      {variantes.length > 0 ? " · También se aplica a las variantes." : ""}
+                    </p>
+                  )}
 
                   <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-3">
                     <div className="flex items-center justify-between">

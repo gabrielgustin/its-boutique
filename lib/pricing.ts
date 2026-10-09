@@ -7,6 +7,12 @@ export function unitPrice(basePrice: number, discountPercent = 0): number {
   return Math.round(basePrice * (1 - discount / 100))
 }
 
+/** Descuento de un producto tal como se guarda: un entero de 0 a 100. Cualquier otra cosa es 0. */
+export function cleanDiscount(value: unknown): number {
+  const number = Math.round(Number(value))
+  return Number.isFinite(number) ? Math.min(100, Math.max(0, number)) : 0
+}
+
 export interface CouponRule {
   code: string
   discount_type: "percentage" | "fixed"

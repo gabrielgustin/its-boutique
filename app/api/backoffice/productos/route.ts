@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { sql } from "@/lib/sql"
 import { requireBackofficeSession } from "@/lib/backoffice-auth"
+import { cleanDiscount } from "@/lib/pricing"
 
 export async function GET() {
   try {
@@ -63,7 +64,7 @@ export async function POST(request: Request) {
         ${categoria || ""},
         ${true},
         ${subcategoria || ""},
-        ${descuento || 0}
+        ${cleanDiscount(descuento)}
       )
       RETURNING *
     `
