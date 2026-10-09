@@ -162,7 +162,7 @@ export const getProductById = cached("product", "catalog", async (id: string): P
 })
 
 export const getSubcategoriesByCategory = cached("subcategories", "catalog", async (categoryId: string): Promise<Subcategoria[]> => {
-  const rows = await sql`SELECT id, nombre, categoria_id FROM subcategorias WHERE categoria_id = ${categoryId} ORDER BY nombre ASC`
+  const rows = await sql`SELECT id, nombre, categoria_id FROM subcategorias WHERE categoria_id = ${categoryId} ORDER BY orden ASC NULLS LAST, nombre ASC`
   return rows as Subcategoria[]
 })
 

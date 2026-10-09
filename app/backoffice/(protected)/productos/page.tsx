@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Home, Grid3X3, Briefcase, Plus, Trash2, X, Pencil, ArrowUp, ArrowDown } from "lucide-react"
+import { Home, Grid3X3, Briefcase, Plus, Trash2, X, Pencil, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -380,6 +380,34 @@ export default function ProductosPage() {
     },
     {} as Record<string, Producto[]>,
   )
+
+  // Mueve una subcategoría un lugar a la izquierda o a la derecha dentro de su categoría.
+  const moverSubcategoria = async (categoriaId: string, delCategoria: Subcategoria[], subcategoriaId: string, direccion: "antes" | "despues") => {
+    const index = delCategoria.findIndex((sub) => sub.id === subcategoriaId)
+    const nuevoIndex = direccion === "antes" ? index - 1 : index + 1
+    if (index === -1 || nuevoIndex < 0 || nuevoIndex >= delCategoria.length) return
+
+    const reordenadas = [...delCategoria]
+    const [movida] = reordenadas.splice(index, 1)
+    reordenadas.splice(nuevoIndex, 0, movida)
+
+    // Se reemplazan solo las posiciones de esta categoría, sin mover las de las demás.
+    let cursor = 0
+    setSubcategorias(subcategorias.map((sub) => (sub.categoria_id === categoriaId ? reordenadas[cursor++] : sub)))
+
+    try {
+      const response = await fetch("/api/backoffice/subcategorias/reorder", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ categoriaId, ids: reordenadas.map((sub) => sub.id) }),
+      })
+      if (!response.ok) throw new Error("Error al reordenar")
+    } catch (error) {
+      console.error("Error reordering subcategorias:", error)
+      toast({ title: "Error", description: "No se pudo reordenar la subcategoría", variant: "destructive" })
+      await fetchSubcategorias()
+    }
+  }
 
   const crearSubcategoria = async (categoriaId: string) => {
     if (nuevaSubcategoriaNombre.trim() === "") {
@@ -1005,7 +1033,31 @@ export default function ProductosPage() {
                               >
                                 {sub.nombre}
                               </button>
-                              <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                              <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 [@media(hover:none)]:opacity-100">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    moverSubcategoria(categoriaId ?? "", subcategoriasCategoria, sub.id, "antes")
+                                  }}
+                                  disabled={subcategoriasCategoria[0]?.id === sub.id}
+                                  className="bg-gray-600 text-white rounded-full p-1.5 hover:bg-gray-700 transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                                  title="Mover a la izquierda"
+                                  aria-label={`Mover ${sub.nombre} a la izquierda`}
+                                >
+                                  <ChevronLeft className="h-3 w-3" />
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    moverSubcategoria(categoriaId ?? "", subcategoriasCategoria, sub.id, "despues")
+                                  }}
+                                  disabled={subcategoriasCategoria[subcategoriasCategoria.length - 1]?.id === sub.id}
+                                  className="bg-gray-600 text-white rounded-full p-1.5 hover:bg-gray-700 transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                                  title="Mover a la derecha"
+                                  aria-label={`Mover ${sub.nombre} a la derecha`}
+                                >
+                                  <ChevronRight className="h-3 w-3" />
+                                </button>
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation()

@@ -17,13 +17,13 @@ export async function GET(request: Request) {
           FROM subcategorias s
           LEFT JOIN categorias c ON s.categoria_id = c.id
           WHERE s.categoria_id = ${categoriaId}
-          ORDER BY s.nombre ASC
+          ORDER BY s.categoria_id ASC, s.orden ASC NULLS LAST, s.nombre ASC
         `
       : await sql`
           SELECT s.*, c.nombre as categoria_nombre 
           FROM subcategorias s
           LEFT JOIN categorias c ON s.categoria_id = c.id
-          ORDER BY s.nombre ASC
+          ORDER BY s.categoria_id ASC, s.orden ASC NULLS LAST, s.nombre ASC
         `
 
     return NextResponse.json(subcategorias)
@@ -63,9 +63,14 @@ export async function POST(request: Request) {
       counter++
     }
 
+    // La subcategoría nueva queda al final de su categoría.
     const result = await sql`
-      INSERT INTO subcategorias (id, nombre, categoria_id, created_at, updated_at)
-      VALUES (${id}, ${nombre}, ${categoria_id}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      INSERT INTO subcategorias (id, nombre, categoria_id, orden, created_at, updated_at)
+      VALUES (
+        ${id}, ${nombre}, ${categoria_id},
+        (SELECT COALESCE(MAX(orden) + 1, 0) FROM subcategorias WHERE categoria_id = ${categoria_id}),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+      )
       RETURNING *
     `
 
