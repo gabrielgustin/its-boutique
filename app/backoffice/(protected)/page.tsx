@@ -8,8 +8,8 @@ import { SignOutButton } from "@/components/backoffice/sign-out-button"
 
 const MAIN: { href: string; label: string; Icon: LucideIcon }[] = [
   { href: "/backoffice/pedidos", label: "Pedidos", Icon: ReceiptText },
-  { href: "/backoffice/productos", label: "Productos", Icon: Briefcase },
   { href: "/backoffice/categorias", label: "Categorías", Icon: Grid3X3 },
+  { href: "/backoffice/productos", label: "Productos", Icon: Briefcase },
 ]
 
 const SETTINGS: { href: string; label: string; Icon: LucideIcon }[] = [
