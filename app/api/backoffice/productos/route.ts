@@ -70,10 +70,10 @@ export async function POST(request: Request) {
     `
 
     for (const variante of Array.isArray(variantes) ? variantes : []) {
-      if (!variante?.nombre || Number(variante.precio) < 0) continue
+      if (!variante?.nombre || !Number.isFinite(Number(variante.precio)) || Number(variante.precio) < 0) continue
       await sql`
         INSERT INTO producto_variantes (producto_id, nombre, precio)
-        VALUES (${id}, ${variante.nombre.trim()}, ${Number(variante.precio)})
+        VALUES (${id}, ${variante.nombre.trim()}, ${Math.round(Number(variante.precio))})
       `
     }
 

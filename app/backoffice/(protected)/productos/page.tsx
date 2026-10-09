@@ -91,9 +91,20 @@ export default function ProductosPage() {
     }
   }
 
-  const editarProducto = (id: string) => {
+  const editarProducto = async (id: string) => {
     const producto = productos.find((prod) => prod.id === id)
     if (producto) {
+      // Cada producto tiene sus propias variantes: se cargan las de este, no las de otro.
+      setVariantes([])
+      try {
+        const response = await fetch(`/api/backoffice/productos/${id}/variantes`)
+        if (response.ok) {
+          const data = (await response.json()) as Array<{ nombre: string; precio: number | string }>
+          setVariantes(data.map((variante) => ({ nombre: variante.nombre, precio: String(variante.precio) })))
+        }
+      } catch (error) {
+        console.error("Error cargando las variantes:", error)
+      }
       setNuevoProducto({
         nombre: producto.nombre,
         descripcion: producto.descripcion,
