@@ -6,6 +6,7 @@ import { StoreImage } from "@/components/store/store-image"
 import { PageBody, TitleBar } from "@/components/store/title-bar"
 import { useSiteTheme } from "@/components/site-theme"
 import { formatPrice, unitPrice } from "@/lib/pricing"
+import { productHref } from "@/lib/catalog-links"
 import { cn } from "@/lib/utils"
 
 export interface CatalogCategory {
@@ -95,7 +96,7 @@ export function ProductGrid({ products, priority = false }: { products: CatalogP
       <ul className="grid grid-cols-2 gap-x-3 gap-y-6 md:grid-cols-3 md:gap-x-5 lg:grid-cols-4">
         {products.map((product, index) => (
           <li key={product.id}>
-            <Link href={`/productos/${product.category_id}/${product.id}`} className="group block rounded-st st-focus">
+            <Link href={productHref(product)} className="group block rounded-st st-focus">
               <span className="relative block overflow-hidden rounded-st bg-st-text/5 shadow-[var(--st-shadow)]" style={{ aspectRatio: "var(--st-image-ratio)" }}>
                 <StoreImage
                   src={product.image_url}
@@ -134,7 +135,7 @@ export function ProductGrid({ products, priority = false }: { products: CatalogP
 /** Tarjeta de producto: foto a un costado, nombre, precio y descuento. */
 function ProductRow({ product }: { product: CatalogProduct }) {
   return (
-    <Link href={`/productos/${product.category_id}/${product.id}`} className="st-raised group relative flex h-36 overflow-hidden transition hover:brightness-[0.98] st-focus">
+    <Link href={productHref(product)} className="st-raised group relative flex h-36 overflow-hidden transition hover:brightness-[0.98] st-focus">
       <span className="relative w-[7.2rem] shrink-0 border-r border-st-border bg-white">
         <StoreImage src={product.image_url} alt="" fill sizes="116px" className="object-cover" />
       </span>

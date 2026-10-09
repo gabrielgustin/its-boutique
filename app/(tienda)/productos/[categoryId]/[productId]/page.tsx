@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { ProductDetail } from "@/components/store/product-detail"
 import { PageBody, TitleBar } from "@/components/store/title-bar"
 import { canOrderNow, getCategoryById, getProductById } from "@/lib/db"
+import { NO_CATEGORY } from "@/lib/catalog-links"
 import { unitPrice } from "@/lib/pricing"
 
 type Props = { params: Promise<{ categoryId: string; productId: string }> }
@@ -15,12 +16,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { categoryId, productId } = await params
+  const { productId } = await params
   const [product, status] = await Promise.all([getProductById(productId), canOrderNow()])
   if (!product) notFound()
 
   const category = await getCategoryById(product.category_id)
-  const backHref = `/productos/${category?.id ?? categoryId}`
+  const backHref = category ? `/productos/${category.id}` : "/"
 
   // Datos estructurados: ayudan a Google a mostrar precio y disponibilidad.
   const jsonLd = {
@@ -42,7 +43,7 @@ export default async function ProductPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <TitleBar title={product.title} backHref={backHref} share />
       <PageBody>
-        <ProductDetail product={product} category={{ id: category?.id ?? categoryId, title: category?.title ?? "" }} canOrder={status.canOrder} />
+        <ProductDetail product={product} category={category ? { id: category.id, title: category.title } : { id: NO_CATEGORY, title: "Otros productos" }} canOrder={status.canOrder} />
       </PageBody>
     </>
   )

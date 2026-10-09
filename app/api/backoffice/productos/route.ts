@@ -50,10 +50,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "El nombre es obligatorio" }, { status: 400 })
     }
 
-    if (!categoria) {
-      return NextResponse.json({ error: "La categoría es obligatoria" }, { status: 400 })
-    }
-
     const id = crypto.randomUUID()
 
     const result = await sql`
@@ -64,7 +60,7 @@ export async function POST(request: Request) {
         ${descripcion || ""}, 
         ${Number.parseInt(precio) || 0}, 
         ${imagen || "/placeholder.svg?height=200&width=200"},
-        ${categoria},
+        ${categoria || ""},
         ${true},
         ${subcategoria || ""},
         ${descuento || 0}

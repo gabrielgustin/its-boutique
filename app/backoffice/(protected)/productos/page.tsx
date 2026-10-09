@@ -21,6 +21,9 @@ import { SignOutButton } from "@/components/backoffice/sign-out-button"
 import { uploadBackofficeImage } from "@/lib/backoffice-image-upload"
 import { ExtraImages } from "@/components/backoffice/extra-images"
 
+// Valor de la opción «Ninguna» de los selectores (el selector no admite un valor vacío).
+const NINGUNA = "__ninguna__"
+
 interface Subcategoria {
   id: string
   nombre: string
@@ -719,15 +722,16 @@ export default function ProductosPage() {
                       <Select
                         value={nuevoProducto.categoria}
                         onValueChange={(value) => {
-                          setNuevoProducto({ ...nuevoProducto, categoria: value, subcategoria: "" })
+                          setNuevoProducto({ ...nuevoProducto, categoria: value === NINGUNA ? "" : value, subcategoria: "" })
                           setCreandoSubcategoriaEnSelector(false)
                           setNombreNuevaSubcategoriaSelector("")
                         }}
                       >
                         <SelectTrigger className="bg-gray-50 border-0 h-10">
-                          <SelectValue placeholder="Selecciona" />
+                          <SelectValue placeholder="Ninguna" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value={NINGUNA}>Ninguna</SelectItem>
                           {categorias.map((cat) => (
                             <SelectItem key={cat.id} value={cat.id.toString()}>
                               {cat.nombre}
@@ -745,7 +749,7 @@ export default function ProductosPage() {
                             setCreandoSubcategoriaEnSelector(true)
                             return
                           }
-                          setNuevoProducto({ ...nuevoProducto, subcategoria: value })
+                          setNuevoProducto({ ...nuevoProducto, subcategoria: value === NINGUNA ? "" : value })
                         }}
                         disabled={!nuevoProducto.categoria}
                       >
@@ -753,6 +757,7 @@ export default function ProductosPage() {
                           <SelectValue placeholder="Ninguna" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value={NINGUNA}>Ninguna</SelectItem>
                           {subcategorias
                             .filter((sub) => sub.categoria_id === nuevoProducto.categoria)
                             .map((sub) => (

@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { useCart } from "@/components/store/cart"
 import { StoreImage } from "@/components/store/store-image"
 import { useStoreText } from "@/components/site-theme"
+import { NO_CATEGORY } from "@/lib/catalog-links"
 import { formatPrice, unitPrice } from "@/lib/pricing"
 import { cn } from "@/lib/utils"
 
@@ -78,7 +79,7 @@ export function ProductDetail({ product, category, canOrder }: { product: Detail
       note: note.trim() || undefined,
     })
     toast.success("Agregado al pedido", { description: `${quantity} × ${product.title}${variant ? ` (${variant.name})` : ""}` })
-    router.push(`/productos/${category.id}`)
+    router.push(category.id === NO_CATEGORY ? "/" : `/productos/${category.id}`)
   }
 
   return (

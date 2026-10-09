@@ -7,6 +7,7 @@ import { Facebook, Globe, Home, Info, Instagram, Loader2, Lock, Menu, MessageCir
 import { useCart } from "@/components/store/cart"
 import { StoreImage } from "@/components/store/store-image"
 import { useSiteTheme, useStoreText } from "@/components/site-theme"
+import { productHref } from "@/lib/catalog-links"
 import { formatPrice, unitPrice } from "@/lib/pricing"
 import { DEFAULT_LOGO_URL } from "@/lib/theme"
 import { cn } from "@/lib/utils"
@@ -236,7 +237,7 @@ function SearchPanel({ onClose }: { onClose: () => void }) {
             <ul className="space-y-2">
               {results.map((product) => (
                 <li key={product.id}>
-                  <Link href={`/productos/${product.category_id}/${product.id}`} className="st-raised flex items-center gap-3 overflow-hidden transition hover:brightness-[0.98] st-focus">
+                  <Link href={productHref(product)} className="st-raised flex items-center gap-3 overflow-hidden transition hover:brightness-[0.98] st-focus">
                     <span className="relative h-16 w-14 shrink-0 bg-st-text/5">
                       <StoreImage src={product.image_url} alt="" fill sizes="56px" className="object-cover" />
                     </span>

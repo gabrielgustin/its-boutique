@@ -1,3 +1,4 @@
+import { productHref } from "@/lib/catalog-links"
 import type { MetadataRoute } from "next"
 import { getCategories, getProducts } from "@/lib/db"
 
@@ -12,6 +13,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: base, changeFrequency: "daily", priority: 1 },
     { url: `${base}/contacto`, changeFrequency: "monthly", priority: 0.3 },
     ...categories.map((category) => ({ url: `${base}/productos/${category.id}`, changeFrequency: "daily" as const, priority: 0.8 })),
-    ...products.map((product) => ({ url: `${base}/productos/${product.category_id}/${product.id}`, changeFrequency: "weekly" as const, priority: 0.6 })),
+    ...products.map((product) => ({ url: `${base}${productHref(product)}`, changeFrequency: "weekly" as const, priority: 0.6 })),
   ]
 }
