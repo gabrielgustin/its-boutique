@@ -3,6 +3,7 @@ import { revalidateTag, unstable_cache } from "next/cache"
 import { query, sql } from "@/lib/sql"
 import { isOpenAt, type BusinessHours } from "@/lib/hours"
 import { DEFAULT_THEME, sanitizeTheme, type ThemeSettings } from "@/lib/theme"
+import { whatsappNumber } from "@/lib/whatsapp"
 
 export { isOpenAt, type BusinessHours }
 
@@ -289,7 +290,7 @@ export const getCheckoutOptions = cached("checkout-options", "config", async ():
 /** Datos de la tienda que usan el encabezado, el menú y las páginas de contacto. */
 export async function getStoreInfo() {
   const config = await getPublicConfig()
-  const whatsapp = config.contact_whatsapp?.replace(/[^\d]/g, "") || null
+  const whatsapp = whatsappNumber(config.contact_whatsapp)
   return {
     siteName: config.site_name || "ITS Boutique",
     logoUrl: config.store_logo || config.header_logo_url || null,
