@@ -27,15 +27,16 @@ export default function FloatingWindow({ url, isOpen, onClose }: FloatingWindowP
           animation: "windowAppear 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
-        <button
-          onClick={onClose}
-          aria-label="Cerrar vista previa"
-          className="absolute top-0 right-14 md:right-[4.5rem] h-16 md:h-20 z-10 flex items-center"
-        >
-          <span className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 mb-[10px] rounded-full bg-white/90 text-gray-700 shadow-md hover:bg-white hover:text-gray-900 transition-colors">
-            <X size={18} strokeWidth={2.5} className="md:w-5 md:h-5" />
-          </span>
-        </button>
+        <div className="flex h-12 shrink-0 items-center justify-between border-b border-gray-200 bg-gray-50 pl-4 pr-2">
+          <span className="text-sm font-medium text-gray-700">Vista de la tienda</span>
+          <button
+            onClick={onClose}
+            aria-label="Cerrar vista previa"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-gray-600 transition-colors hover:bg-gray-200 hover:text-gray-900"
+          >
+            <X size={20} strokeWidth={2.5} />
+          </button>
+        </div>
 
         <div className="flex-1 bg-white overflow-hidden">
           <iframe
