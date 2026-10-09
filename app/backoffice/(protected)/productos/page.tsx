@@ -1033,50 +1033,6 @@ export default function ProductosPage() {
                               >
                                 {sub.nombre}
                               </button>
-                              <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 [@media(hover:none)]:opacity-100">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    moverSubcategoria(categoriaId ?? "", subcategoriasCategoria, sub.id, "antes")
-                                  }}
-                                  disabled={subcategoriasCategoria[0]?.id === sub.id}
-                                  className="bg-gray-600 text-white rounded-full p-1.5 hover:bg-gray-700 transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-                                  title="Mover a la izquierda"
-                                  aria-label={`Mover ${sub.nombre} a la izquierda`}
-                                >
-                                  <ChevronLeft className="h-3 w-3" />
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    moverSubcategoria(categoriaId ?? "", subcategoriasCategoria, sub.id, "despues")
-                                  }}
-                                  disabled={subcategoriasCategoria[subcategoriasCategoria.length - 1]?.id === sub.id}
-                                  className="bg-gray-600 text-white rounded-full p-1.5 hover:bg-gray-700 transition-colors shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-                                  title="Mover a la derecha"
-                                  aria-label={`Mover ${sub.nombre} a la derecha`}
-                                >
-                                  <ChevronRight className="h-3 w-3" />
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setEditandoSubcategoria(sub.id)
-                                    setNuevoNombreSubcategoria(sub.nombre)
-                                  }}
-                                  className="bg-blue-500 text-white rounded-full p-1.5 hover:bg-blue-600 transition-colors shadow-md"
-                                  title="Editar subcategoría"
-                                >
-                                  <Pencil className="h-3 w-3" />
-                                </button>
-                                <button
-                                  onClick={(e) => eliminarSubcategoria(sub.id, e)}
-                                  className="bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors shadow-md"
-                                  title="Eliminar subcategoría"
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </button>
-                              </div>
                             </>
                           )}
                         </div>
@@ -1126,6 +1082,39 @@ export default function ProductosPage() {
                         </>
                       )}
                     </div>
+
+                    {(() => {
+                      const index = subcategoriasCategoria.findIndex((sub) => sub.id === filtroSubcategoria)
+                      const elegida = index >= 0 ? subcategoriasCategoria[index] : null
+                      if (!elegida || editandoSubcategoria === elegida.id) return null
+                      const boton = "inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+                      return (
+                        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2" role="group" aria-label={`Opciones de la subcategoría ${elegida.nombre}`}>
+                          <span className="px-1 text-sm text-gray-600">
+                            Subcategoría <strong className="text-gray-800">{elegida.nombre}</strong>
+                          </span>
+                          <button type="button" onClick={() => moverSubcategoria(categoriaId ?? "", subcategoriasCategoria, elegida.id, "antes")} disabled={index === 0} className={`${boton} border-gray-300 bg-white text-gray-700 hover:bg-gray-100`}>
+                            <ChevronLeft className="h-4 w-4" /> Mover
+                          </button>
+                          <button type="button" onClick={() => moverSubcategoria(categoriaId ?? "", subcategoriasCategoria, elegida.id, "despues")} disabled={index === subcategoriasCategoria.length - 1} className={`${boton} border-gray-300 bg-white text-gray-700 hover:bg-gray-100`}>
+                            Mover <ChevronRight className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditandoSubcategoria(elegida.id)
+                              setNuevoNombreSubcategoria(elegida.nombre)
+                            }}
+                            className={`${boton} border-blue-200 bg-white text-blue-700 hover:bg-blue-50`}
+                          >
+                            <Pencil className="h-4 w-4" /> Editar nombre
+                          </button>
+                          <button type="button" onClick={(e) => eliminarSubcategoria(elegida.id, e)} className={`${boton} border-red-200 bg-white text-red-600 hover:bg-red-50`}>
+                            <Trash2 className="h-4 w-4" /> Eliminar
+                          </button>
+                        </div>
+                      )
+                    })()}
 
                     {filtroSubcategoria !== "todos" && (
                       <p className="text-xs text-gray-500 mb-3 -mt-1">
