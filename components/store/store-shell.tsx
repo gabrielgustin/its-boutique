@@ -140,7 +140,8 @@ function SideMenu({ open, onClose, store }: { open: boolean; onClose: () => void
             </a>
           ))}
 
-          <Link href="/backoffice" className={`${item} mt-4 border-t border-white/20 pt-5`}>
+          <div className="my-3 h-px bg-white/20" aria-hidden />
+          <Link href="/backoffice" className={item}>
             <Lock className="h-6 w-6" aria-hidden /> Admin
           </Link>
 
