@@ -2,6 +2,7 @@ import "server-only"
 import { promises as fs } from "node:fs"
 import path from "node:path"
 import type { Pool, PoolClient } from "pg"
+import { tagsFor, type Tag } from "@/lib/cache-tags"
 
 // Única puerta de entrada a la base de datos.
 //
@@ -42,7 +43,9 @@ const globalStore = globalThis as unknown as { __itsDriver?: Promise<Driver> }
 
 async function createPgDriver(): Promise<Driver> {
   const { Pool } = await import("pg")
-  const pool = new Pool({ connectionString: DATABASE_URL, max: 5 })
+  // Pocas conexiones por instancia (cada función de Vercel tiene la suya) y tiempo de espera
+  // holgado: si la base estaba apagada, la primera consulta tarda un segundo en despertarla.
+  const pool = new Pool({ connectionString: DATABASE_URL, max: 3, idleTimeoutMillis: 10_000, connectionTimeoutMillis: 20_000 })
   const run = async <T extends Row>(client: Pool | PoolClient, text: string, params: unknown[] = []) =>
     (await client.query(text, params)).rows as T[]
 
@@ -135,14 +138,14 @@ function getDriver(): Promise<Driver> {
 
 const compile = (strings: TemplateStringsArray) => strings.reduce((text, part, index) => `${text}$${index}${part}`)
 
-// La tienda guarda en caché el catálogo y la configuración (lib/db.ts). Cualquier
-// escritura la invalida, así el backoffice nunca tiene que acordarse de hacerlo.
-const WRITE = /^\s*(INSERT|UPDATE|DELETE)\b/i
-async function afterWrite() {
+// La tienda guarda en caché el catálogo y la configuración (lib/db.ts). Cualquier escritura que
+// los toque la invalida (ver lib/cache-tags.ts), así el backoffice nunca tiene que acordarse de hacerlo.
+async function invalidateTags(tags: Iterable<Tag>) {
+  const list = [...new Set(tags)]
+  if (!list.length) return
   try {
     const { revalidateTag } = await import("next/cache")
-    revalidateTag("catalog", { expire: 0 })
-    revalidateTag("config", { expire: 0 })
+    for (const tag of list) revalidateTag(tag, { expire: 0 })
   } catch {
     // Fuera de una ruta o acción del servidor no hay caché que invalidar.
   }
@@ -150,7 +153,7 @@ async function afterWrite() {
 
 async function run<T extends Row>(target: Queryable, text: string, params?: unknown[]): Promise<T[]> {
   const rows = await target.query<T>(text, params)
-  if (WRITE.test(text)) await afterWrite()
+  await invalidateTags(tagsFor(text))
   return rows
 }
 
@@ -161,8 +164,15 @@ export const query: Queryable["query"] = async (text, params) => run(await getDr
 
 /** Varias consultas que se confirman juntas o no se confirma ninguna. */
 export async function transaction<T>(fn: (tx: Queryable & { sql: SqlTag }) => Promise<T>): Promise<T> {
-  const result = await (await getDriver()).transaction((tx) => fn({ ...tx, sql: (strings, ...values) => tx.query(compile(strings), values) }))
-  await afterWrite()
+  const touched = new Set<Tag>()
+  const result = await (await getDriver()).transaction((tx) => {
+    const track: Queryable["query"] = (text, params) => {
+      for (const tag of tagsFor(text)) touched.add(tag)
+      return tx.query(text, params)
+    }
+    return fn({ query: track, sql: (strings, ...values) => track(compile(strings), values) })
+  })
+  await invalidateTags(touched)
   return result
 }
 

@@ -11,8 +11,13 @@ export { isOpenAt, type BusinessHours }
 
 export type CacheTag = "catalog" | "config"
 
+// Toda escritura desde el backoffice invalida la caché al instante (ver `invalidate`), así que el
+// vencimiento por tiempo es solo una red de seguridad. Mantenerlo largo es lo que permite que la base
+// de datos se apague: con un vencimiento corto, cada pocos minutos la tienda la volvería a despertar.
+const CACHE_SECONDS = 60 * 60 * 24
+
 const cached = <Args extends unknown[], T>(key: string, tag: CacheTag, fn: (...args: Args) => Promise<T>) =>
-  unstable_cache(fn, [key], { tags: [tag], revalidate: 300 })
+  unstable_cache(fn, [key], { tags: [tag], revalidate: CACHE_SECONDS })
 
 /** Llamar después de cualquier escritura para que la tienda muestre los datos nuevos al instante. */
 export function invalidate(...tags: CacheTag[]) {
