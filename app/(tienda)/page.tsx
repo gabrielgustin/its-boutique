@@ -1,6 +1,6 @@
 import { CategoryGrid } from "@/components/store/catalog"
 import { PageBody, TitleBar } from "@/components/store/title-bar"
-import { ClosedBanner, PromoBanner } from "@/components/store/banners"
+import { HomeBanner } from "@/components/store/home-banner"
 import { canOrderNow, getCategories, getPromoBannerConfig } from "@/lib/db"
 
 export default async function HomePage() {
@@ -10,7 +10,7 @@ export default async function HomePage() {
     <>
       <TitleBar title="" />
       <PageBody>
-        {!status.open ? <ClosedBanner canOrder={status.canOrder} /> : banner.enabled && banner.text ? <PromoBanner text={banner.text} /> : null}
+        <HomeBanner banner={banner} status={status} />
         <CategoryGrid categories={categories} />
       </PageBody>
     </>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from 'next/navigation'
@@ -10,6 +10,8 @@ import { Card } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { PreviewButton } from "@/components/backoffice/preview-button"
 import { SignOutButton } from "@/components/backoffice/sign-out-button"
+import { PREVIEW_READY } from "@/components/site-theme"
+import { BANNER_PREVIEW_MESSAGE } from "@/components/store/home-banner"
 
 export default function BannerPromocionalPage() {
   const router = useRouter()
@@ -20,10 +22,30 @@ export default function BannerPromocionalPage() {
   const [bannerText, setBannerText] = useState("")
   const [bannerEnabled, setBannerEnabled] = useState(true)
   const [showPreview, setShowPreview] = useState(false)
+  const frame = useRef<HTMLIFrameElement>(null)
 
   useEffect(() => {
     fetchBannerConfig()
   }, [])
+
+  // La vista previa es la tienda real en un iframe: recibe el borrador por postMessage,
+  // así se ve al instante, sin guardar.
+  const sendDraft = useCallback(() => {
+    frame.current?.contentWindow?.postMessage(
+      { type: BANNER_PREVIEW_MESSAGE, text: bannerText, enabled: bannerEnabled },
+      window.location.origin,
+    )
+  }, [bannerText, bannerEnabled])
+
+  useEffect(sendDraft, [sendDraft, showPreview])
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin === window.location.origin && event.data?.type === PREVIEW_READY) sendDraft()
+    }
+    window.addEventListener("message", onMessage)
+    return () => window.removeEventListener("message", onMessage)
+  }, [sendDraft])
 
   const fetchBannerConfig = async () => {
     try {
@@ -157,7 +179,9 @@ export default function BannerPromocionalPage() {
                       <div className="bg-white rounded-lg overflow-hidden shadow-lg">
                         
                         <iframe
-                          src="/?previewBanner=true"
+                          ref={frame}
+                          src="/"
+                          onLoad={sendDraft}
                           className="w-full h-[600px] border-0"
                           title="Vista previa ilustrativa de la aplicación"
                         />
