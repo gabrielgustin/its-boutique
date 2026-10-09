@@ -1,4 +1,4 @@
-export const MIN_PASSWORD_LENGTH = 3
+export const MIN_PASSWORD_LENGTH = 8
 
 const USERNAME_EMAIL_DOMAIN = "its-boutique.local"
 
