@@ -278,24 +278,40 @@ export function ImageField({
   onChange,
   fallback,
   clearLabel,
+  removeBackground,
 }: {
   label: string
   value: string | null
   onChange: (url: string | null) => void
   fallback?: string
   clearLabel?: string
+  /** Quita el fondo liso de la imagen al subirla (para logos). */
+  removeBackground?: boolean
 }) {
   const inputId = useId()
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const shown = value ?? fallback ?? null
 
   async function upload(file: File) {
     setError(null)
+    setNotice(null)
     setUploading(true)
     try {
-      onChange(await uploadBackofficeImage(file))
+      onChange(
+        await uploadBackofficeImage(
+          file,
+          removeBackground
+            ? {
+                removeBackground: true,
+                onBackground: (removed) =>
+                  setNotice(removed ? "Se quitó el fondo de la imagen." : "No se detectó un fondo liso: se subió tal cual."),
+              }
+            : undefined,
+        ),
+      )
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "No se pudo subir la imagen")
     } finally {
@@ -340,7 +356,11 @@ export function ImageField({
           )}
         </div>
       </div>
-      <p className="text-xs text-gray-500">PNG, JPG o WebP. Se optimiza sola al subirla.</p>
+      <p className="text-xs text-gray-500">
+        PNG, JPG o WebP. Se optimiza sola al subirla.
+        {removeBackground ? " Si el fondo es liso (por ejemplo blanco), se quita solo." : ""}
+      </p>
+      {notice && !error && <p className="text-xs font-medium text-emerald-700">{notice}</p>}
       <ErrorNote message={error} />
     </div>
   )

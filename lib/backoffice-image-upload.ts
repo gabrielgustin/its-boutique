@@ -1,4 +1,5 @@
 import { upload } from "@vercel/blob/client"
+import { removeSolidBackground, visibleBounds } from "@/lib/image-background"
 
 // Generous ceiling for the raw file selected by the user, before any
 // client-side resizing happens.
@@ -15,6 +16,13 @@ const WEBP_QUALITY = 0.82
 
 export class ImageUploadError extends Error {}
 
+export interface UploadOptions {
+  /** Quita un fondo liso (para logos). Si la imagen no lo tiene, se sube igual. */
+  removeBackground?: boolean
+  /** Avisa si se pudo quitar el fondo. */
+  onBackground?: (removed: boolean) => void
+}
+
 function toBaseFileName(fileName: string) {
   const withoutExtension = fileName.replace(/\.[^/.]+$/, "")
   const safeName = withoutExtension.replace(/[^a-zA-Z0-9_-]+/g, "-").toLowerCase() || "imagen"
@@ -30,7 +38,7 @@ function toBaseFileName(fileName: string) {
  * The Canvas API has no native dependency: it runs the same way in every
  * browser, so this step can never fail for that reason.
  */
-async function resizeToWebp(file: File): Promise<Blob | null> {
+async function resizeToWebp(file: File, options: UploadOptions = {}): Promise<Blob | null> {
   if (typeof document === "undefined") return null
 
   const objectUrl = URL.createObjectURL(file)
@@ -63,8 +71,33 @@ async function resizeToWebp(file: File): Promise<Blob | null> {
 
     ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight)
 
+    let output = canvas
+    if (options.removeBackground) {
+      // Se trabaja sobre la imagen ya escalada y se recorta el margen que queda vacío.
+      const pixels = ctx.getImageData(offsetX, offsetY, Math.round(drawWidth), Math.round(drawHeight))
+      const removed = removeSolidBackground(pixels.data, pixels.width, pixels.height)
+      options.onBackground?.(removed)
+      if (removed) {
+        const bounds = visibleBounds(pixels.data, pixels.width, pixels.height)
+        if (bounds) {
+          const trimmed = document.createElement("canvas")
+          trimmed.width = bounds.width
+          trimmed.height = bounds.height
+          const trimmedCtx = trimmed.getContext("2d")
+          const staging = document.createElement("canvas")
+          staging.width = pixels.width
+          staging.height = pixels.height
+          staging.getContext("2d")?.putImageData(pixels, 0, 0)
+          if (trimmedCtx) {
+            trimmedCtx.drawImage(staging, bounds.x, bounds.y, bounds.width, bounds.height, 0, 0, bounds.width, bounds.height)
+            output = trimmed
+          }
+        }
+      }
+    }
+
     const blob = await new Promise<Blob | null>((resolve) => {
-      canvas.toBlob((result) => resolve(result), "image/webp", WEBP_QUALITY)
+      output.toBlob((result) => resolve(result), "image/webp", WEBP_QUALITY)
     })
 
     // Some browsers (older Safari) ignore the requested type and return null
@@ -92,7 +125,7 @@ async function resizeToWebp(file: File): Promise<Blob | null> {
  * file is uploaded as-is rather than failing the whole upload — some image
  * is always better than a hard error for the user.
  */
-export async function uploadBackofficeImage(file: File): Promise<string> {
+export async function uploadBackofficeImage(file: File, options: UploadOptions = {}): Promise<string> {
   if (!file.type.startsWith("image/")) {
     throw new ImageUploadError("Por favor selecciona un archivo de imagen válido")
   }
@@ -101,7 +134,7 @@ export async function uploadBackofficeImage(file: File): Promise<string> {
     throw new ImageUploadError("La imagen no debe superar los 20MB")
   }
 
-  const optimized = await resizeToWebp(file)
+  const optimized = await resizeToWebp(file, options)
 
   const uploadFile = optimized ?? file
   const fileName = optimized ? `${toBaseFileName(file.name)}.webp` : file.name

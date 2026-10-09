@@ -404,7 +404,7 @@ function ImagesTab({ draft, change }: TabProps) {
   return (
     <>
       <Group title="En la tienda">
-        <ImageField label="Logo del encabezado" value={draft.logoUrl} fallback={DEFAULT_LOGO_URL} clearLabel="Volver al logo original" onChange={(url) => change({ logoUrl: url })} />
+        <ImageField label="Logo del encabezado" value={draft.logoUrl} fallback={DEFAULT_LOGO_URL} clearLabel="Volver al logo original" removeBackground onChange={(url) => change({ logoUrl: url })} />
       </Group>
       <Group title="En el navegador y al compartir">
         <ImageField label="Ícono de la pestaña (favicon)" value={draft.faviconUrl} clearLabel="Volver al original" onChange={(url) => change({ faviconUrl: url })} />
